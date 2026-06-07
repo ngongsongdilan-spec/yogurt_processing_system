@@ -1,0 +1,11 @@
+venv/
+ui-ux-pro-max-library/
+ui-ux-pro-max-skill/
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+*.docx
+.DS_Store
+*.db
+db.sqlite3

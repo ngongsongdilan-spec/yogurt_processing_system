@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yogurt Processing System</title>
+{% load static %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- MOBILE SIDEBAR TOGGLE -->
+<button id="sidebar-toggle" aria-label="Toggle navigation menu">☰</button>
+<div id="sidebar-overlay"></div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay" class="auth-overlay">
+  <div class="auth-card glass-panel">
+    <div class="auth-brand"><div class="brand-icon sm">Y</div><h2>YogurtOS</h2></div>
+    <div id="auth-forms">
+      <form id="login-form" class="auth-form">
+        <h3>Sign In</h3>
+        <div class="form-group"><label>Username</label><input type="text" id="login-user" required placeholder="admin"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-pass" required placeholder="admin123"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Sign In</button>
+        <p class="auth-switch">No account? <a href="#" id="show-signup">Sign up</a></p>
+      </form>
+      <form id="signup-form" class="auth-form hidden">
+        <h3>Create Account</h3>
+        <div class="form-group"><label>Username</label><input type="text" id="signup-user" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signup-pass" required></div>
+        <div class="form-group"><label>Confirm</label><input type="password" id="signup-confirm" required></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Sign Up</button>
+        <p class="auth-switch">Already registered? <a href="#" id="show-login">Sign in</a></p>
+      </form>
+    </div>
+    <div id="auth-error" class="auth-error hidden"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="hidden">
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">Y</div>
+      <div class="brand-text">
+        <span class="brand-title">YogurtOS</span>
+        <span class="brand-sub" id="sidebar-user">signed in</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Dashboard</span></button>
+      <button class="nav-item" data-tab="inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"/><path d="M21 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M3 8h18"/><path d="M12 8v8"/><path d="M8 12h8"/></svg><span>Inventory</span></button>
+      <button class="nav-item" data-tab="batches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span>Production</span></button>
+      <button class="nav-item" data-tab="qc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span>Quality Control</span></button>
+      <button class="nav-item" data-tab="machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Machines</span></button>
+      <button class="nav-item" data-tab="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>Audit Trail</span></button>
+      <button class="nav-item" data-tab="security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Security</span></button>
+      <button class="nav-item" data-tab="purchasing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Purchasing</span></button>
+      <button class="nav-item" data-tab="sales"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Sales</span></button>
+      <button class="nav-item" data-tab="explorer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>SQL Explorer</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="status-dot live"></div>
+      <span id="db-status">Connected</span>
+      <button id="logout-btn" class="btn-logout" title="Sign out">← Sign Out</button>
+    </div>
+  </aside>
+
+  <main id="main-content">
+
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content active">
+      <div class="page-header"><h1 class="page-title">Dashboard</h1><p class="page-desc">Factory overview at a glance</p></div>
+      <div class="metric-grid" id="metric-grid"></div>
+      <div style="margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div class="card glass-panel"><div class="card-header"><h2>Recent Batches</h2></div><div class="table-wrap"><table><thead><tr><th>Batch</th><th>Product</th><th>Status</th><th>Date</th></tr></thead><tbody id="dash-batches"><tr><td colspan="4" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+        <div class="card glass-panel"><div class="card-header"><h2>Recent QC</h2></div><div class="table-wrap"><table><thead><tr><th>Batch</th><th>Result</th><th>Inspector</th></tr></thead><tbody id="dash-qc"><tr><td colspan="3" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="tab-inventory" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Inventory</h1><p class="page-desc">Raw materials & finished goods stock levels</p></div>
+      <div class="card-grid">
+        <div class="card glass-panel"><div class="card-header"><h2>Raw Materials</h2><span class="badge" id="inv-raw-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Material</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Lot</th><th>Expiry</th></tr></thead><tbody id="inv-raw-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+        <div class="card glass-panel"><div class="card-header"><h2>Finished Goods</h2><span class="badge" id="inv-prod-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Product</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Batch</th><th>Expiry</th></tr></thead><tbody id="inv-prod-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      </div>
+    </section>
+
+    <!-- PRODUCTION BATCHES -->
+    <section id="tab-batches" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Production Batches</h1><p class="page-desc">All batch records with status</p></div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Product</th><th>Date</th><th>Planned</th><th>Actual</th><th>Status</th><th>Recipe</th><th>By</th></tr></thead><tbody id="batch-table-body"><tr><td colspan="8" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- QUALITY CONTROL -->
+    <section id="tab-qc" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Quality Control</h1><p class="page-desc">Log & review inspection results</p></div>
+      <div class="card glass-panel form-card">
+        <form id="qc-form"><div class="form-row">
+          <div class="form-group"><label>Batch ID</label><input type="number" id="qc-batch" required placeholder="e.g. 7"></div>
+          <div class="form-group"><label>Inspector</label><input type="text" id="qc-inspector" required placeholder="e.g. Alex Rivera"></div>
+          <div class="form-group"><label>Result</label><select id="qc-status"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="OnHold">On Hold</option></select></div>
+        </div><div class="form-group"><label>Remarks</label><textarea id="qc-remarks" rows="2"></textarea></div>
+        <button type="submit" class="btn btn-primary">Submit QC</button></form>
+      </div>
+      <div class="card glass-panel"><div class="card-header"><h2>Inspection History</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Batch</th><th>Inspector</th><th>Result</th><th>Remarks</th><th>Date</th></tr></thead><tbody id="qc-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- MACHINES -->
+    <section id="tab-machines" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Machines</h1><p class="page-desc">Equipment status & maintenance schedule</p></div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Location</th><th>Status</th><th>Purchased</th><th>Maintenance</th><th>Next Due</th></tr></thead><tbody id="machine-table-body"><tr><td colspan="8" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section id="tab-audit" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Audit Trail</h1><p class="page-desc">Automatic change tracking via PostgreSQL triggers</p></div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Table</th><th>Operation</th><th>Record</th><th>Changed By</th><th>Timestamp</th></tr></thead><tbody id="audit-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- SECURITY SANDBOX -->
+    <section id="tab-security" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Security Sandbox</h1><p class="page-desc">Test database constraints, triggers, and integrity enforcement</p></div>
+      <div class="card-grid">
+        <div class="card glass-panel sandbox-card">
+          <h2>🧪 Completed Batch Lock</h2>
+          <p class="sandbox-desc">Attempts to UPDATE a completed production batch (ID 1). The <code>trg_lock_completed_batches</code> trigger should block it.</p>
+          <button class="btn btn-danger" onclick="runTest('completed_batch')">Test Completed Batch Lock</button>
+        </div>
+        <div class="card glass-panel sandbox-card">
+          <h2>🧪 QC Approval Lock</h2>
+          <p class="sandbox-desc">Attempts to UPDATE a passed QC record (ID 1). The <code>trg_lock_passed_qc</code> trigger should block critical field changes.</p>
+          <button class="btn btn-danger" onclick="runTest('qc_approved')">Test QC Approval Lock</button>
+        </div>
+        <div class="card glass-panel sandbox-card">
+          <h2>🧪 Check Constraint</h2>
+          <p class="sandbox-desc">Attempts INSERT with negative planned_qty. The <code>production_batch_planned_qty_check</code> (> 0) should reject it.</p>
+          <button class="btn btn-danger" onclick="runTest('check_constraint')">Test Check Constraint</button>
+        </div>
+        <div class="card glass-panel sandbox-card">
+          <h2>🧪 Unique Violation</h2>
+          <p class="sandbox-desc">Attempts to INSERT a duplicate username 'admin'. The <code>user_account_username_key</code> unique index should reject it.</p>
+          <button class="btn btn-danger" onclick="runTest('unique_violation')">Test Unique Constraint</button>
+        </div>
+      </div>
+      <div class="card glass-panel" id="security-result" style="margin-top:1.5rem">
+        <div class="card-header"><h2>Test Results</h2></div>
+        <div id="sec-result-placeholder" class="result-placeholder"><p>Click any test button above.</p></div>
+        <div id="sec-result-content" class="result-content hidden">
+          <div class="result-badge" id="sec-result-badge"></div>
+          <pre id="sec-result-message" class="result-message"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- PURCHASING -->
+    <section id="tab-purchasing" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Purchasing</h1><p class="page-desc">Purchase orders & supplier management</p></div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>PO#</th><th>Supplier</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th></tr></thead><tbody id="purchase-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- SALES -->
+    <section id="tab-sales" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Sales</h1><p class="page-desc">Sales orders & customer management</p></div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>SO#</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th></tr></thead><tbody id="sales-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- SQL EXPLORER -->
+    <section id="tab-explorer" class="tab-content">
+      <div class="page-header"><h1 class="page-title">SQL Explorer</h1><p class="page-desc">Run read-only queries directly against the database</p></div>
+      <div class="card glass-panel">
+        <div class="form-group"><label>SQL Query</label>
+          <textarea id="sql-query" rows="4" style="font-family:var(--font-mono);font-size:0.85rem">SELECT table_name, table_type FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="runSQL()">Execute</button>
+      </div>
+      <div class="card glass-panel" style="margin-top:1rem"><div class="card-header"><h2>Result</h2><span id="sql-count" class="badge"></span></div>
+        <div class="table-wrap"><table><thead id="sql-thead"></thead><tbody id="sql-tbody"><tr><td class="loading-msg">Run a query to see results.</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
