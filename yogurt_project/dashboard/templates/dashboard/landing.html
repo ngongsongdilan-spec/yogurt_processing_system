@@ -130,6 +130,26 @@ a{text-decoration:none;color:inherit}
 .more-card:hover{transform:none;border-color:rgba(210,180,140,0.35)}
 .more-card .name{color:var(--text-sec);font-style:italic}
 
+/* ── HERO CREDITS ── */
+.hero-credits{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;animation:fadeInCredits 0.8s ease-out both;position:absolute;inset:0;padding:2rem}
+.credit-line{font-family:var(--font-display);color:var(--text-pri);opacity:0;animation:creditReveal 0.6s ease-out forwards}
+.credit-line.small{font-size:clamp(0.8rem,2vw,1rem);letter-spacing:4px;text-transform:uppercase;color:var(--text-sec);font-weight:500}
+.credit-line.name{font-size:clamp(1.5rem,5vw,2.5rem);font-weight:800;animation-delay:0.2s}
+.credit-line.names{font-size:clamp(0.95rem,2.5vw,1.15rem);font-weight:600;color:var(--text-pri);animation-delay:0.4s}
+.credit-line.names:nth-child(6){animation-delay:0.5s}
+.credit-line.names:nth-child(7){animation-delay:0.6s}
+.credit-line.names:nth-child(8){animation-delay:0.7s}
+.credit-line.names:nth-child(9){animation-delay:0.8s}
+.credit-line.names:nth-child(10){animation-delay:0.9s}
+.credit-line.names:nth-child(11){animation-delay:1.0s}
+.credit-line.names:nth-child(12){animation-delay:1.1s}
+.credit-line.names:nth-child(13){animation-delay:1.2s}
+.credit-line.names:nth-child(14){animation-delay:1.3s}
+.credit-line.names:nth-child(15){animation-delay:1.4s}
+.credit-divider{width:60px;height:2px;background:var(--brand-primary);border-radius:2px;margin:1rem 0;opacity:0;animation:creditReveal 0.6s ease-out 0.3s forwards}
+@keyframes fadeInCredits{from{opacity:0}to{opacity:1}}
+@keyframes creditReveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
 /* ── FOOTER ── */
 .footer{text-align:center;padding:2rem 1.5rem;color:var(--text-sec);font-size:0.8rem;border-top:1px solid rgba(210,180,140,0.12)}
 </style>
@@ -139,24 +159,50 @@ a{text-decoration:none;color:inherit}
 <!-- ============================================================ -->
 <!-- HERO -->
 <!-- ============================================================ -->
-<section class="hero">
+<section class="hero" id="hero-section">
   <div class="hero-bg">
     <div class="orb"></div>
     <div class="orb"></div>
     <div class="orb"></div>
   </div>
 
-  <div class="brand-icon">Y</div>
-  <h1>Yogurt Processing System</h1>
-  <p>A comprehensive database management platform for yogurt production — tracking inventory, batches, quality control, machinery, purchasing, sales, and more.</p>
-  <div class="hero-actions">
-    <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
-    <a href="#team" class="btn btn-outline">Meet the Team</a>
+  <div id="hero-phase-1">
+    <div class="brand-icon">Y</div>
+    <h1>Yogurt Processing System</h1>
+    <p>A comprehensive database management platform for yogurt production — tracking inventory, batches, quality control, machinery, purchasing, sales, and more.</p>
+    <div class="hero-actions">
+      <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
+      <a href="#team" class="btn btn-outline">Meet the Team</a>
+    </div>
+    <div class="scroll-indicator" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
+      <div class="mouse"><div class="dot"></div></div>
+      <span>Scroll</span>
+    </div>
   </div>
 
-  <div class="scroll-indicator" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
-    <div class="mouse"><div class="dot"></div></div>
-    <span>Scroll</span>
+  <div id="hero-phase-2" class="hero-credits" style="opacity:0;display:none">
+    <div class="credit-line small">PROJECT ASSIGNED BY</div>
+    <div class="credit-line name">Eng. Kingue Patrick</div>
+    <div class="credit-divider"></div>
+    <div class="credit-line small">COMPLETED BY GROUP 12</div>
+    <div class="credit-line names">Tsopou Folack Merveille (Leader)</div>
+    <div class="credit-line names">Nyando Mbone (Co-Leader)</div>
+    <div class="credit-line names">Ngong Song Dilan</div>
+    <div class="credit-line names">Tsafack Kamfack Andy Pedro</div>
+    <div class="credit-line names">Gweth Bi Balep Etienne</div>
+    <div class="credit-line names">Yeyetio Didier Guesmel</div>
+    <div class="credit-line names">Yunkung Glen Yunkung</div>
+    <div class="credit-line names">Ngoh Francis Efem</div>
+    <div class="credit-line names">Dze Awesome Buh</div>
+    <div class="credit-line names">Mbelle Christian</div>
+    <div class="credit-line names">Azebove Fortune Morel</div>
+  </div>
+
+  <div id="hero-phase-3" class="hero-credits" style="opacity:0;display:none">
+    <div class="credit-line small">LAUNCH THE SYSTEM</div>
+    <div class="hero-actions" style="margin-top:1.5rem;justify-content:center">
+      <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
+    </div>
   </div>
 </section>
 
@@ -362,6 +408,33 @@ const counterObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 
 document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+// Hero fade sequence: hero → credits → launch
+(function() {
+  const phase1 = document.getElementById('hero-phase-1');
+  const phase2 = document.getElementById('hero-phase-2');
+  const phase3 = document.getElementById('hero-phase-3');
+  if (!phase1 || !phase2 || !phase3) return;
+
+  setTimeout(() => {
+    phase1.style.transition = 'opacity 1s ease';
+    phase1.style.opacity = '0';
+    setTimeout(() => {
+      phase1.style.display = 'none';
+      phase2.style.display = 'flex';
+      phase2.style.opacity = '1';
+      setTimeout(() => {
+        phase2.style.transition = 'opacity 1s ease';
+        phase2.style.opacity = '0';
+        setTimeout(() => {
+          phase2.style.display = 'none';
+          phase3.style.display = 'flex';
+          phase3.style.opacity = '1';
+        }, 1000);
+      }, 10000);
+    }, 1000);
+  }, 4000);
+})();
 </script>
 </body>
 </html>

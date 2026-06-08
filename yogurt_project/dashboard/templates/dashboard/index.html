@@ -86,22 +86,33 @@
 
     <!-- INVENTORY -->
     <section id="tab-inventory" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Inventory</h1><p class="page-desc">Raw materials & finished goods stock levels</p></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Inventory</h1><p class="page-desc">Raw materials & finished goods stock levels</p></div>
+        <div class="toolbar" style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="openAddModal('raw_material')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ Raw Material</button>
+          <button class="btn btn-primary" onclick="openAddModal('finished_good')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ Finished Good</button>
+        </div>
+      </div>
       <div class="card-grid">
-        <div class="card glass-panel"><div class="card-header"><h2>Raw Materials</h2><span class="badge" id="inv-raw-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Material</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Lot</th><th>Expiry</th></tr></thead><tbody id="inv-raw-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
-        <div class="card glass-panel"><div class="card-header"><h2>Finished Goods</h2><span class="badge" id="inv-prod-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Product</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Batch</th><th>Expiry</th></tr></thead><tbody id="inv-prod-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+        <div class="card glass-panel"><div class="card-header"><h2>Raw Materials</h2><span class="badge" id="inv-raw-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Material</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Lot</th><th>Expiry</th><th>Actions</th></tr></thead><tbody id="inv-raw-body"><tr><td colspan="7" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+        <div class="card glass-panel"><div class="card-header"><h2>Finished Goods</h2><span class="badge" id="inv-prod-count">0</span></div><div class="table-wrap"><table><thead><tr><th>Product</th><th>On Hand</th><th>Reserved</th><th>UOM</th><th>Batch</th><th>Expiry</th><th>Actions</th></tr></thead><tbody id="inv-prod-body"><tr><td colspan="7" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
       </div>
     </section>
 
     <!-- PRODUCTION BATCHES -->
     <section id="tab-batches" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Production Batches</h1><p class="page-desc">All batch records with status</p></div>
-      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Product</th><th>Date</th><th>Planned</th><th>Actual</th><th>Status</th><th>Recipe</th><th>By</th></tr></thead><tbody id="batch-table-body"><tr><td colspan="8" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Production Batches</h1><p class="page-desc">All batch records with status</p></div>
+        <button class="btn btn-primary" onclick="openAddModal('batch')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ New Batch</button>
+      </div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Product</th><th>Date</th><th>Planned</th><th>Actual</th><th>Status</th><th>Recipe</th><th>By</th><th>Actions</th></tr></thead><tbody id="batch-table-body"><tr><td colspan="9" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- QUALITY CONTROL -->
     <section id="tab-qc" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Quality Control</h1><p class="page-desc">Log & review inspection results</p></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Quality Control</h1><p class="page-desc">Log & review inspection results</p></div>
+      </div>
       <div class="card glass-panel form-card">
         <form id="qc-form"><div class="form-row">
           <div class="form-group"><label>Batch ID</label><input type="number" id="qc-batch" required placeholder="e.g. 7"></div>
@@ -110,13 +121,16 @@
         </div><div class="form-group"><label>Remarks</label><textarea id="qc-remarks" rows="2"></textarea></div>
         <button type="submit" class="btn btn-primary">Submit QC</button></form>
       </div>
-      <div class="card glass-panel"><div class="card-header"><h2>Inspection History</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Batch</th><th>Inspector</th><th>Result</th><th>Remarks</th><th>Date</th></tr></thead><tbody id="qc-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      <div class="card glass-panel"><div class="card-header"><h2>Inspection History</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Batch</th><th>Inspector</th><th>Result</th><th>Remarks</th><th>Date</th><th>Actions</th></tr></thead><tbody id="qc-table-body"><tr><td colspan="7" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- MACHINES -->
     <section id="tab-machines" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Machines</h1><p class="page-desc">Equipment status & maintenance schedule</p></div>
-      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Location</th><th>Status</th><th>Purchased</th><th>Maintenance</th><th>Next Due</th></tr></thead><tbody id="machine-table-body"><tr><td colspan="8" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Machines</h1><p class="page-desc">Equipment status & maintenance schedule</p></div>
+        <button class="btn btn-primary" onclick="openAddModal('machine')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ Add Machine</button>
+      </div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Location</th><th>Status</th><th>Purchased</th><th>Maintenance</th><th>Next Due</th><th>Actions</th></tr></thead><tbody id="machine-table-body"><tr><td colspan="9" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- AUDIT TRAIL -->
@@ -162,14 +176,20 @@
 
     <!-- PURCHASING -->
     <section id="tab-purchasing" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Purchasing</h1><p class="page-desc">Purchase orders & supplier management</p></div>
-      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>PO#</th><th>Supplier</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th></tr></thead><tbody id="purchase-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Purchasing</h1><p class="page-desc">Purchase orders & supplier management</p></div>
+        <button class="btn btn-primary" onclick="openAddModal('purchase')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ New PO</button>
+      </div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>PO#</th><th>Supplier</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th><th>Actions</th></tr></thead><tbody id="purchase-table-body"><tr><td colspan="7" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- SALES -->
     <section id="tab-sales" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Sales</h1><p class="page-desc">Sales orders & customer management</p></div>
-      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>SO#</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th></tr></thead><tbody id="sales-table-body"><tr><td colspan="6" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;flex-wrap:wrap">
+        <div><h1 class="page-title">Sales</h1><p class="page-desc">Sales orders & customer management</p></div>
+        <button class="btn btn-primary" onclick="openAddModal('sale')" style="width:auto;min-height:36px;padding:0.4rem 0.9rem;font-size:0.78rem">+ New SO</button>
+      </div>
+      <div class="card glass-panel"><div class="table-wrap"><table><thead><tr><th>SO#</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th><th>Lines</th><th>Actions</th></tr></thead><tbody id="sales-table-body"><tr><td colspan="7" class="loading-msg">Loading...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- SQL EXPLORER -->
@@ -217,6 +237,23 @@
     </section>
 
   </main>
+</div>
+
+<!-- CRUD MODAL -->
+<div id="crud-modal" class="modal-overlay hidden">
+  <div class="modal-content glass-panel">
+    <div class="modal-header">
+      <h2 id="modal-title">Title</h2>
+      <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form id="modal-form">
+      <div id="modal-fields"></div>
+      <div class="modal-actions" style="display:flex;gap:0.75rem;margin-top:1rem">
+        <button type="submit" class="btn btn-primary" id="modal-save-btn" style="flex:1">Save</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal()" style="flex:1">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div id="toast-container"></div>
