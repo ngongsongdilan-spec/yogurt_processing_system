@@ -38,7 +38,7 @@ body{font-family:var(--font-sans);background:var(--bg-body);color:var(--text-pri
 @media(min-width:768px){#sidebar{position:sticky;transform:none;box-shadow:none;padding:1.25rem 0.6rem;background:rgba(255,248,240,0.85);backdrop-filter:blur(12px)}}
 
 /* hamburger */
-#sidebar-toggle{position:fixed;top:0.75rem;left:0.75rem;z-index:1001;width:40px;height:40px;border-radius:var(--radius-sm);background:var(--bg-glass);border:1px solid var(--border-glass);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-pri);transition:all var(--transition);font-size:1.25rem}
+#sidebar-toggle{position:fixed;top:0.75rem;right:0.75rem;z-index:1001;width:40px;height:40px;border-radius:var(--radius-sm);background:var(--bg-glass);border:1px solid var(--border-glass);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-pri);transition:all var(--transition);font-size:1.25rem}
 #sidebar-toggle:hover{border-color:var(--border-hover);background:rgba(255,248,240,0.95)}
 @media(min-width:768px){#sidebar-toggle{display:none}}
 
