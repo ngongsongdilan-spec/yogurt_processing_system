@@ -125,18 +125,30 @@ a{text-decoration:none;color:inherit}
 .instructor-card{background:linear-gradient(135deg,rgba(244,114,150,0.08),rgba(244,165,96,0.08));border:1px solid rgba(244,114,150,0.2);padding:1.5rem}
 .instructor-card .role-tag{color:var(--brand-primary);font-size:0.65rem}
 .instructor-card .name{font-size:1.15rem}
-.instructor-card .avatar{width:44px;height:44px;font-size:1rem}
 .more-card{border:2px dashed rgba(210,180,140,0.25);background:transparent;backdrop-filter:none;cursor:default}
 .more-card:hover{transform:none;border-color:rgba(210,180,140,0.35)}
 .more-card .name{color:var(--text-sec);font-style:italic}
+
+/* ── MEMBER CARDS ── */
+.member-card{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.25rem;background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.12);border-radius:var(--radius);transition:all 0.3s ease;position:relative;overflow:hidden}
+.member-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand-primary);border-radius:0 3px 3px 0;opacity:0.5}
+.member-card:hover{transform:translateX(4px);border-color:rgba(244,114,150,0.2);box-shadow:0 4px 16px rgba(244,114,150,0.06)}
+.member-card:hover::before{opacity:1}
+.member-num{font-family:var(--font-display);font-size:0.75rem;font-weight:800;color:var(--text-sec);opacity:0.5;min-width:28px;text-align:right}
+.member-info{flex:1}
+.member-name{font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--text-pri)}
+.member-meta{font-size:0.7rem;color:var(--text-sec);font-family:var(--font-mono);margin-top:0.15rem;display:flex;align-items:center;gap:0.5rem}
+.member-role{font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:0.15rem 0.4rem;border-radius:4px}
+.member-role.leader{background:rgba(244,114,150,0.12);color:var(--brand-primary);border:1px solid rgba(244,114,150,0.2)}
+.member-role.coleader{background:rgba(245,158,11,0.12);color:#F59E0B;border:1px solid rgba(245,158,11,0.2)}
 
 /* ── HERO CREDITS ── */
 .hero-credits{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;animation:fadeInCredits 0.8s ease-out both;position:absolute;inset:0;padding:2rem;overflow-y:auto}
 .credit-line{font-family:var(--font-display);color:var(--text-pri);opacity:0;animation:creditReveal 0.6s ease-out forwards}
 .credit-line.small{font-size:clamp(0.65rem,1.5vw,0.8rem);letter-spacing:3px;text-transform:uppercase;color:var(--text-sec);font-weight:500}
 .credit-line.name{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:800;animation-delay:0.2s}
-.names-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.25rem 1.5rem;margin-top:0.5rem;max-width:700px;width:100%}
-.credit-line.names{font-size:clamp(0.75rem,1.8vw,0.9rem);font-weight:600;color:var(--text-pri);text-align:center}
+.names-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1rem;margin-top:0.75rem;max-width:680px;width:100%}
+.credit-line.names{font-size:clamp(0.85rem,2vw,1.05rem);font-weight:700;color:var(--text-pri);text-align:center;font-family:var(--font-display);padding:0.2rem 0.5rem;background:rgba(255,248,240,0.3);border-radius:4px;letter-spacing:0.3px}
 .names-grid > .credit-line{opacity:0;animation:creditReveal 0.5s ease-out forwards}
 .names-grid > .credit-line:nth-child(1){animation-delay:0.1s}
 .names-grid > .credit-line:nth-child(2){animation-delay:0.2s}
@@ -330,45 +342,94 @@ a{text-decoration:none;color:inherit}
 <!-- ============================================================ -->
 <section id="team" class="team-section">
   <h2 class="section-title fade-up">Project Team</h2>
-  <p class="section-sub fade-up">Built as a database management capstone project.</p>
+  <p class="section-sub fade-up">Built as a database management capstone project — Group 12</p>
 
-  <div class="fade-up">
+  <div class="fade-up" style="margin-bottom:2rem">
     <div class="credit-card instructor-card">
       <div class="avatar">KP</div>
       <div>
-        <div class="role-tag">Instructor</div>
-        <div class="name">KINGUE PATRICK</div>
+        <div class="role-tag">Course Instructor</div>
+        <div class="name">Eng. Kingue Patrick</div>
       </div>
     </div>
   </div>
 
-  <div class="stagger">
-    <div class="credit-card">
-      <div class="avatar">NS</div>
-      <div>
-        <div class="role-tag">Student</div>
-        <div class="name">NGONG SONG DILAN</div>
+  <div style="display:grid;grid-template-columns:1fr;gap:0.65rem" class="stagger">
+    <div class="member-card">
+      <div class="member-num">01</div>
+      <div class="member-info">
+        <div class="member-name">Tsopou Folack Merveille</div>
+        <div class="member-meta">FE24A385 <span class="member-role leader">Leader</span></div>
       </div>
     </div>
-    <div class="credit-card">
-      <div class="avatar">NF</div>
-      <div>
-        <div class="role-tag">Student</div>
-        <div class="name">NGOH FRANCIS EFEM</div>
+    <div class="member-card">
+      <div class="member-num">02</div>
+      <div class="member-info">
+        <div class="member-name">Nyando Mbone</div>
+        <div class="member-meta">FE24A355 <span class="member-role coleader">Co-Leader</span></div>
       </div>
     </div>
-    <div class="credit-card">
-      <div class="avatar">NM</div>
-      <div>
-        <div class="role-tag">Student</div>
-        <div class="name">NYANDO MBONNE</div>
+    <div class="member-card">
+      <div class="member-num">03</div>
+      <div class="member-info">
+        <div class="member-name">Ngong Song Dilan</div>
+        <div class="member-meta">FE24A337</div>
       </div>
     </div>
-    <div class="credit-card more-card">
-      <div class="avatar" style="background:rgba(210,180,140,0.3);color:var(--text-sec)">+</div>
-      <div>
-        <div class="role-tag">Student</div>
-        <div class="name muted">Add more members...</div>
+    <div class="member-card">
+      <div class="member-num">04</div>
+      <div class="member-info">
+        <div class="member-name">Tsafack Kamfack Andy Pedro</div>
+        <div class="member-meta">FE24A383</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">05</div>
+      <div class="member-info">
+        <div class="member-name">Gweth Bi Balep Etienne</div>
+        <div class="member-meta">FE24A288</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">06</div>
+      <div class="member-info">
+        <div class="member-name">Yeyetio Didier Guesmel</div>
+        <div class="member-meta">FE24A392</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">07</div>
+      <div class="member-info">
+        <div class="member-name">Yunkung Glen Yunkung</div>
+        <div class="member-meta">FE24A393</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">08</div>
+      <div class="member-info">
+        <div class="member-name">Ngoh Francis Efem</div>
+        <div class="member-meta">FE24A335</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">09</div>
+      <div class="member-info">
+        <div class="member-name">Dze Awesome Buh</div>
+        <div class="member-meta">FE24A253</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">10</div>
+      <div class="member-info">
+        <div class="member-name">Mbelle Christian</div>
+        <div class="member-meta">FE24A310</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-num">11</div>
+      <div class="member-info">
+        <div class="member-name">Azebove Fortune Morel</div>
+        <div class="member-meta">FE24A233</div>
       </div>
     </div>
   </div>
