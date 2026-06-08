@@ -56,6 +56,85 @@ def signup_view(request):
 
 
 # ================================================================
+# HELPERS
+# ================================================================
+def _get_role(username):
+    with connection.cursor() as c:
+        c.execute("SELECT r.role_name FROM user_account u JOIN role r ON u.role_id = r.role_id WHERE u.username = %s AND u.is_active = true", [username])
+        row = c.fetchone()
+        return row[0] if row else None
+
+
+# ================================================================
+# USER MANAGEMENT (admin only)
+# ================================================================
+@csrf_exempt
+def users_view(request):
+    if request.method == 'GET':
+        username = request.headers.get('X-Username')
+        role = _get_role(username)
+        if role != 'admin':
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+        with connection.cursor() as c:
+            c.execute("""SELECT u.user_id, u.username, r.role_name, COALESCE(e.employee_name, ''), u.is_active
+                         FROM user_account u JOIN role r ON u.role_id = r.role_id
+                         LEFT JOIN employee e ON u.employee_id = e.employee_id
+                         ORDER BY u.user_id""")
+            cols = ['id', 'username', 'role', 'employee_name', 'is_active']
+            users = [dict(zip(cols, r)) for r in c.fetchall()]
+        return JsonResponse({'status': 'success', 'users': users})
+
+    if request.method == 'POST':
+        username = request.headers.get('X-Username')
+        role = _get_role(username)
+        if role != 'admin':
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+        try:
+            data = json.loads(request.body)
+            new_user = data.get('username')
+            password = data.get('password')
+            role_name = data.get('role', 'viewer')
+            emp_name = data.get('employee_name', '')
+            with connection.cursor() as c:
+                c.execute("SELECT role_id FROM role WHERE role_name = %s", [role_name])
+                rrow = c.fetchone()
+                if not rrow:
+                    return JsonResponse({'status': 'error', 'message': f'Invalid role: {role_name}'}, status=400)
+                c.execute("SELECT user_id FROM user_account WHERE username = %s", [new_user])
+                if c.fetchone():
+                    return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=409)
+                eid = None
+                if emp_name:
+                    c.execute("SELECT employee_id FROM employee WHERE employee_name = %s", [emp_name])
+                    e = c.fetchone()
+                    if e:
+                        eid = e[0]
+                c.execute("INSERT INTO user_account (username, password, employee_id, role_id) VALUES (%s,%s,%s,%s) RETURNING user_id",
+                          [new_user, password, eid, rrow[0]])
+                uid = c.fetchone()[0]
+            return JsonResponse({'status': 'success', 'user_id': uid, 'message': 'User created.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+
+@csrf_exempt
+def user_detail_view(request, user_id):
+    if request.method != 'DELETE':
+        return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+    username = request.headers.get('X-Username')
+    role = _get_role(username)
+    if role != 'admin':
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+    try:
+        with connection.cursor() as c:
+            c.execute("DELETE FROM user_account WHERE user_id = %s", [user_id])
+        return JsonResponse({'status': 'success', 'message': 'User deleted.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+# ================================================================
 # DASHBOARD
 # ================================================================
 def dashboard_data(request):

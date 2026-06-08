@@ -16,4 +16,6 @@ urlpatterns = [
     path('api/sales/', views.sales_data, name='sales'),
     path('api/trigger-test/', views.trigger_test_view, name='trigger_test'),
     path('api/sql-explorer/', views.sql_explorer, name='sql_explorer'),
+    path('api/users/', views.users_view, name='users'),
+    path('api/users/<int:user_id>/', views.user_detail_view, name='user_detail'),
 ]

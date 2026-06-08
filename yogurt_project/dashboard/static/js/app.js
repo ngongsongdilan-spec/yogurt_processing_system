@@ -86,7 +86,31 @@ function showApp() {
   document.getElementById('auth-overlay').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('sidebar-user').textContent = currentUser?.username || 'signed in';
+  document.getElementById('sidebar-role').textContent = currentUser?.role || '';
+  filterSidebarByRole(currentUser?.role);
+  document.getElementById('dash-welcome').textContent = getRoleWelcome(currentUser?.role);
   loadDashboard();
+}
+
+function getRoleWelcome(role) {
+  const msgs = {
+    admin: 'Full system access — manage users and oversee all modules',
+    manager: 'Production oversight — monitor batches, inventory, and quality',
+    operator: 'Daily operations — track production and machine status',
+    inspector: 'Quality assurance — record and review inspection results',
+    viewer: 'Read-only view of system dashboards and audit logs'
+  };
+  return msgs[role] || 'Factory overview at a glance';
+}
+
+function filterSidebarByRole(role) {
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    const roles = (btn.dataset.roles || '').split(',');
+    btn.style.display = roles.includes(role) ? '' : 'none';
+  });
+  // activate the first visible tab
+  const first = document.querySelector('.nav-item:not([style*="display: none"])');
+  if (first) first.click();
 }
 
 // ================================================================
@@ -110,6 +134,7 @@ function initSidebar() {
         case 'audit': loadAudit(); break;
         case 'purchasing': loadPurchasing(); break;
         case 'sales': loadSales(); break;
+        case 'admin': loadAdmin(); break;
       }
     });
   });
@@ -352,6 +377,81 @@ async function runSQL() {
       document.getElementById('sql-tbody').innerHTML = '<tr><td class="loading-msg">' + (d.message || 'Done.') + '</td></tr>';
     }
   } catch(e) { showToast('Query error', 'error'); }
+}
+
+// ================================================================
+// ADMIN — User Management
+// ================================================================
+function loadAdmin() {
+  loadUsers();
+  const form = document.getElementById('admin-user-form');
+  form.onsubmit = handleCreateUser;
+}
+
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/users/', {
+      headers: {'X-Username': currentUser?.username || ''}
+    });
+    const d = await res.json();
+    if (d.status !== 'success') return showToast(d.message || 'Failed to load users', 'error');
+    document.getElementById('admin-user-count').textContent = d.users.length + ' users';
+    document.getElementById('admin-users-body').innerHTML = d.users.map(u => `
+      <tr>
+        <td data-label="ID">${u.id}</td>
+        <td data-label="Username">${esc(u.username)}</td>
+        <td data-label="Role"><span class="role-badge-sm role-${u.role}">${u.role}</span></td>
+        <td data-label="Employee">${esc(u.employee_name) || '—'}</td>
+        <td data-label="Active">${u.is_active ? '<span style="color:var(--success)">● Active</span>' : '<span style="color:var(--text-sec)">○ Inactive</span>'}</td>
+        <td data-label="Actions">
+          ${u.username !== 'admin' ? `<button class="btn-sm btn-danger-sm" onclick="deleteUser(${u.id})">Delete</button>` : '<span style="color:var(--text-sec);font-size:0.7rem">—</span>'}
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) { showToast('Connection error', 'error'); }
+}
+
+async function handleCreateUser(e) {
+  e.preventDefault();
+  const payload = {
+    username: document.getElementById('admin-username').value.trim(),
+    password: document.getElementById('admin-password').value,
+    role: document.getElementById('admin-role').value,
+    employee_name: document.getElementById('admin-employee').value.trim()
+  };
+  if (!payload.username || !payload.password) return showToast('Username and password required', 'error');
+  try {
+    const res = await fetch('/api/users/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-Username': currentUser?.username || ''},
+      body: JSON.stringify(payload)
+    });
+    const d = await res.json();
+    if (d.status === 'success') {
+      showToast('User created!', 'success');
+      document.getElementById('admin-user-form').reset();
+      loadUsers();
+    } else {
+      showToast(d.message || 'Creation failed', 'error');
+    }
+  } catch(e) { showToast('Network error', 'error'); }
+}
+
+async function deleteUser(userId) {
+  if (!confirm('Delete this user? This cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/users/' + userId + '/', {
+      method: 'DELETE',
+      headers: {'X-Username': currentUser?.username || ''}
+    });
+    const d = await res.json();
+    if (d.status === 'success') {
+      showToast('User deleted.', 'info');
+      loadUsers();
+    } else {
+      showToast(d.message || 'Delete failed', 'error');
+    }
+  } catch(e) { showToast('Network error', 'error'); }
 }
 
 // ================================================================
