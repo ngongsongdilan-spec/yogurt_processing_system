@@ -1,4 +1,4 @@
-/* Yogurt Processing System — Frontend Controller */
+/* Yoghurt Processing System — Frontend Controller */
 
 let currentUser = null;
 let refData = {};
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // AUTH
 // ================================================================
 function initAuth() {
-  const token = sessionStorage.getItem('yogurt_user');
+  const token = sessionStorage.getItem('yoghurt_user');
   if (token) {
     currentUser = JSON.parse(token);
     showApp();
@@ -36,7 +36,7 @@ function initAuth() {
     document.getElementById('auth-error').classList.add('hidden');
   });
   document.getElementById('logout-btn').addEventListener('click', () => {
-    sessionStorage.removeItem('yogurt_user');
+    sessionStorage.removeItem('yoghurt_user');
     location.reload();
   });
 }
@@ -51,7 +51,7 @@ async function handleLogin(e) {
   const data = await res.json();
   if (data.status === 'success') {
     currentUser = data.user;
-    sessionStorage.setItem('yogurt_user', JSON.stringify(data.user));
+    sessionStorage.setItem('yoghurt_user', JSON.stringify(data.user));
     showApp();
   } else {
     showAuthError(data.message || 'Invalid credentials');
