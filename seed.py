@@ -88,6 +88,18 @@ for tbl in ['user_account', 'production_batch', 'quality_control', 'inventory',
         FOR EACH ROW EXECUTE FUNCTION fn_audit_trigger();
     """)
 
+# Ensure user_account has auto-increment default and nullable employee_id
+cur.execute("""
+    DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_account' AND column_name='employee_id' AND is_nullable='NO') THEN
+            ALTER TABLE user_account ALTER COLUMN employee_id DROP NOT NULL;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_account' AND column_name='user_id' AND column_default IS NOT NULL) THEN
+            ALTER TABLE user_account ALTER COLUMN user_id SET DEFAULT nextval('user_account_user_id_seq'::regclass);
+        END IF;
+    END $$;
+""")
+
 # ============================================================
 # STEP 2: Seed reference tables
 # ============================================================
