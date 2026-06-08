@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.db import connection, DatabaseError
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password, check_password
 
 
 def landing(request):
@@ -22,15 +23,25 @@ def login_view(request):
     try:
         data = json.loads(request.body)
         with connection.cursor() as c:
-            c.execute("SELECT u.user_id, u.username, r.role_name, e.employee_name "
+            c.execute("SELECT u.user_id, u.username, u.password, r.role_name, e.employee_name "
                       "FROM user_account u JOIN role r ON u.role_id = r.role_id "
                       "LEFT JOIN employee e ON u.employee_id = e.employee_id "
-                      "WHERE u.username = %s AND u.password = %s AND u.is_active = true",
-                      [data['username'], data['password']])
+                      "WHERE u.username = %s AND u.is_active = true",
+                      [data['username']])
             row = c.fetchone()
         if row:
-            return JsonResponse({'status': 'success', 'user': {
-                'id': row[0], 'username': row[1], 'role': row[2], 'name': row[3]}})
+            stored = row[2]
+            if stored.startswith('pbkdf2_') or stored.startswith('bcrypt') or stored.startswith('argon2'):
+                matched = check_password(data['password'], stored)
+            else:
+                matched = (data['password'] == stored)
+                if matched:
+                    hashed = make_password(data['password'])
+                    with connection.cursor() as c:
+                        c.execute("UPDATE user_account SET password = %s WHERE user_id = %s", [hashed, row[0]])
+            if matched:
+                return JsonResponse({'status': 'success', 'user': {
+                    'id': row[0], 'username': row[1], 'role': row[3], 'name': row[4]}})
         return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=401)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
@@ -48,7 +59,7 @@ def signup_view(request):
                 return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=409)
             c.execute("INSERT INTO user_account (username, password, employee_id, role_id) "
                       "VALUES (%s, %s, NULL, 5) RETURNING user_id",
-                      [data['username'], data['password']])
+                      [data['username'], make_password(data['password'])])
             uid = c.fetchone()[0]
         return JsonResponse({'status': 'success', 'user_id': uid, 'message': 'Account created.'})
     except Exception as e:
@@ -110,7 +121,7 @@ def users_view(request):
                     if e:
                         eid = e[0]
                 c.execute("INSERT INTO user_account (username, password, employee_id, role_id) VALUES (%s,%s,%s,%s) RETURNING user_id",
-                          [new_user, password, eid, rrow[0]])
+                          [new_user, make_password(password), eid, rrow[0]])
                 uid = c.fetchone()[0]
             return JsonResponse({'status': 'success', 'user_id': uid, 'message': 'User created.'})
         except Exception as e:

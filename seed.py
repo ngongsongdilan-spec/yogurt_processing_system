@@ -4,7 +4,17 @@ Populates all 26 tables with realistic data for a yogurt processing plant.
 Also adds audit_log table + trigger for automatic change tracking.
 """
 
-import os, psycopg2
+import os
+import sys
+
+# Bootstrap Django for password hashing
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yogurt_project.settings')
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'yogurt_project'))
+import django
+django.setup()
+from django.contrib.auth.hashers import make_password
+
+import psycopg2
 
 conn = psycopg2.connect(os.environ.get('DATABASE_URL', 'dbname=yogurt user=postgres password=Mypassword@2 host=localhost port=5432'))
 conn.autocommit = True
@@ -145,21 +155,32 @@ ON CONFLICT (employee_id) DO NOTHING;
 """)
 
 # --- user_account (depends on employee, role) ---
-cur.execute("""
-DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='user_account_user_id_seq') THEN CREATE SEQUENCE user_account_user_id_seq; END IF; END $$;
-SELECT setval('user_account_user_id_seq', 10, true);
-INSERT INTO user_account (user_id, username, password, employee_id, role_id, is_active) VALUES
-(1, 'admin',    'admin123',   5, 1, true),
-(2, 'alex.r',   'pass123',   1, 3, true),
-(3, 'maria.c',  'pass123',   2, 4, true),
-(4, 'james.o',  'pass123',   3, 5, true),
-(5, 'priya.s',  'pass123',   4, 2, true),
-(6, 'david.k',  'pass123',   5, 2, true),
-(7, 'sarah.j',  'pass123',   6, 5, true),
-(8, 'carlos.m', 'pass123',   7, 3, true),
-(9, 'aisha.p',  'pass123',   8, 4, true)
-ON CONFLICT (user_id) DO NOTHING;
-""")
+users_seed = [
+    (1, 'admin',    make_password('admin123'),  5, 1),
+    (2, 'alex.r',   make_password('pass123'),   1, 3),
+    (3, 'maria.c',  make_password('pass123'),   2, 4),
+    (4, 'james.o',  make_password('pass123'),   3, 5),
+    (5, 'priya.s',  make_password('pass123'),   4, 2),
+    (6, 'david.k',  make_password('pass123'),   5, 2),
+    (7, 'sarah.j',  make_password('pass123'),   6, 5),
+    (8, 'carlos.m', make_password('pass123'),   7, 3),
+    (9, 'aisha.p',  make_password('pass123'),   8, 4),
+]
+# Use individual INSERT ... ON CONFLICT so hashed passwords don't get re-hashed
+cur.execute("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='user_account_user_id_seq') THEN CREATE SEQUENCE user_account_user_id_seq; END IF; END $$;")
+cur.execute("SELECT setval('user_account_user_id_seq', 10, true)")
+for uid, uname, pw, eid, rid in users_seed:
+    cur.execute(
+        "INSERT INTO user_account (user_id, username, password, employee_id, role_id, is_active) "
+        "VALUES (%s, %s, %s, %s, %s, true) ON CONFLICT (user_id) DO NOTHING",
+        [uid, uname, pw, eid, rid]
+    )
+
+# Migrate any existing plaintext passwords to hashed
+cur.execute("SELECT user_id, password FROM user_account WHERE password NOT LIKE 'pbkdf2_%%' AND password NOT LIKE 'bcrypt%%' AND password NOT LIKE 'argon2%%'")
+for uid, plain_pw in cur.fetchall():
+    hashed = make_password(plain_pw)
+    cur.execute("UPDATE user_account SET password = %s WHERE user_id = %s", [hashed, uid])
 
 # --- supplier ---
 cur.execute("""
