@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yogurt Processing System</title>
+{% load static %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --brand-primary: hsl(350, 75%, 62%);
+  --brand-accent: hsl(35, 90%, 55%);
+  --brand-dark: #3D2C1A;
+  --brand-light: #FFF8F0;
+  --bg-body: #FDF6EC;
+  --text-pri: #3D2C1A;
+  --text-sec: #8B7355;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:var(--font-sans);background:var(--bg-body);color:var(--text-pri);min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%, rgba(244,114,150,0.08) 0%, transparent 60%),radial-gradient(ellipse at 70% 60%, rgba(244,165,96,0.06) 0%, transparent 50%);pointer-events:none}
+.brand-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--brand-primary),var(--brand-accent));border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:2rem;color:#fff;margin:0 auto 1.5rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,6vw,3.2rem);font-weight:800;color:var(--text-pri);margin-bottom:0.75rem}
+.hero p{font-size:clamp(0.95rem,2.5vw,1.15rem);color:var(--text-sec);max-width:600px;line-height:1.7;margin-bottom:2rem}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;font-family:var(--font-sans);font-weight:700;font-size:1rem;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.3s ease}
+.btn-primary{background:linear-gradient(135deg,var(--brand-primary),hsl(350,75%,50%));color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(244,114,150,0.35)}
+.btn-outline{background:transparent;color:var(--text-pri);border:2px solid var(--border-glass)}
+.btn-outline:hover{background:var(--bg-glass)}
+
+/* ── CREDITS SECTION ── */
+.credits{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto;width:100%}
+.credits h2{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.6rem);font-weight:700;color:var(--text-pri);text-align:center;margin-bottom:2rem}
+.credit-card{background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.2);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem}
+.credit-card .role{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--brand-primary);font-weight:700;min-width:80px}
+.credit-card .name{font-size:1rem;font-weight:600;color:var(--text-pri)}
+.credit-card .name.muted{color:var(--text-sec);font-style:italic}
+.instructor-card{background:linear-gradient(135deg,rgba(244,114,150,0.08),rgba(244,165,96,0.08));border:1px solid rgba(244,114,150,0.2);padding:1.75rem 2rem;margin-bottom:1.5rem}
+.instructor-card .role{color:var(--brand-primary);font-size:0.7rem}
+.instructor-card .name{font-size:1.2rem}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:1.5rem;color:var(--text-sec);font-size:0.8rem;border-top:1px solid rgba(210,180,140,0.15);margin-top:auto}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="brand-icon">Y</div>
+  <h1>Yogurt Processing System</h1>
+  <p>A comprehensive database management system for yogurt production — tracking inventory, batches, quality control, machinery, purchasing, sales, and more.</p>
+  <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
+</section>
+
+<section class="credits">
+  <h2>Project Team</h2>
+
+  <div class="credit-card instructor-card">
+    <div>
+      <div class="role">Instructor</div>
+      <div class="name">KINGUE PATRICK</div>
+    </div>
+  </div>
+
+  <div class="credit-card">
+    <div>
+      <div class="role">Student</div>
+      <div class="name">NGONG SONG DILAN</div>
+    </div>
+  </div>
+
+  <div class="credit-card">
+    <div>
+      <div class="role">Student</div>
+      <div class="name">NGOH FRANCIS EFEM</div>
+    </div>
+  </div>
+
+  <div class="credit-card">
+    <div>
+      <div class="role">Student</div>
+      <div class="name">NYANDO MBONNE</div>
+    </div>
+  </div>
+
+  <div class="credit-card">
+    <div>
+      <div class="role">Student</div>
+      <div class="name" id="more-placeholder">+ Add more members...</div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">Yogurt Processing System &mdash; Database Management Project</div>
+</body>
+</html>

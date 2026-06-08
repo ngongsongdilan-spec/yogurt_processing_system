@@ -30,3 +30,4 @@ for t in tables:
 print("All tables truncated. Ready for fresh seed.")
 cur.close()
 conn.close()
+

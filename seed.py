@@ -4,12 +4,9 @@ Populates all 26 tables with realistic data for a yogurt processing plant.
 Also adds audit_log table + trigger for automatic change tracking.
 """
 
-import psycopg2
+import os, psycopg2
 
-conn = psycopg2.connect(
-    dbname='yogurt', user='postgres', password='Mypassword@2',
-    host='localhost', port='5432'
-)
+conn = psycopg2.connect(os.environ.get('DATABASE_URL', 'dbname=yogurt user=postgres password=Mypassword@2 host=localhost port=5432'))
 conn.autocommit = True
 cur = conn.cursor()
 
@@ -137,6 +134,7 @@ ON CONFLICT (employee_id) DO NOTHING;
 
 # --- user_account (depends on employee, role) ---
 cur.execute("""
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='user_account_user_id_seq') THEN CREATE SEQUENCE user_account_user_id_seq; END IF; END $$;
 SELECT setval('user_account_user_id_seq', 10, true);
 INSERT INTO user_account (user_id, username, password, employee_id, role_id, is_active) VALUES
 (1, 'admin',    'admin123',   5, 1, true),
@@ -490,32 +488,42 @@ ON CONFLICT (transaction_id) DO NOTHING;
 # STEP 3: Reset sequences to max values
 # ============================================================
 cur.execute("""
-SELECT setval('user_account_user_id_seq', COALESCE((SELECT MAX(user_id) FROM user_account), 1));
-SELECT setval('batch_material_consumption_consumption_id_seq', COALESCE((SELECT MAX(consumption_id) FROM batch_material_consumption), 1));
-SELECT setval('customer_customer_id_seq', COALESCE((SELECT MAX(customer_id) FROM customer), 1));
-SELECT setval('delivery_delivery_id_seq', COALESCE((SELECT MAX(delivery_id) FROM delivery), 1));
-SELECT setval('department_department_id_seq', COALESCE((SELECT MAX(department_id) FROM department), 1));
-SELECT setval('employee_employee_id_seq', COALESCE((SELECT MAX(employee_id) FROM employee), 1));
-SELECT setval('inventory_inventory_id_seq', COALESCE((SELECT MAX(inventory_id) FROM inventory), 1));
-SELECT setval('lot_lot_id_seq', COALESCE((SELECT MAX(lot_id) FROM lot), 1));
-SELECT setval('machine_machine_id_seq', COALESCE((SELECT MAX(machine_id) FROM machine), 1));
-SELECT setval('maintenance_maintenance_id_seq', COALESCE((SELECT MAX(maintenance_id) FROM maintenance), 1));
-SELECT setval('product_product_id_seq', COALESCE((SELECT MAX(product_id) FROM product), 1));
-SELECT setval('product_inventory_product_inventory_id_seq', COALESCE((SELECT MAX(product_inventory_id) FROM product_inventory), 1));
-SELECT setval('product_specification_spec_id_seq', COALESCE((SELECT MAX(spec_id) FROM product_specification), 1));
-SELECT setval('production_batch_batch_id_seq', COALESCE((SELECT MAX(batch_id) FROM production_batch), 1));
-SELECT setval('purchase_order_poid_seq', COALESCE((SELECT MAX(poid) FROM purchase_order), 1));
-SELECT setval('purchase_order_line_po_line_id_seq', COALESCE((SELECT MAX(po_line_id) FROM purchase_order_line), 1));
-SELECT setval('quality_control_qcid_seq', COALESCE((SELECT MAX(qcid) FROM quality_control), 1));
-SELECT setval('raw_material_material_id_seq', COALESCE((SELECT MAX(material_id) FROM raw_material), 1));
-SELECT setval('recipe_recipe_id_seq', COALESCE((SELECT MAX(recipe_id) FROM recipe), 1));
-SELECT setval('recipe_ingredient_recipe_ingredient_id_seq', COALESCE((SELECT MAX(recipe_ingredient_id) FROM recipe_ingredient), 1));
-SELECT setval('role_role_id_seq', COALESCE((SELECT MAX(role_id) FROM role), 1));
-SELECT setval('sales_order_sales_id_seq', COALESCE((SELECT MAX(sales_id) FROM sales_order), 1));
-SELECT setval('sales_order_line_sales_line_id_seq', COALESCE((SELECT MAX(sales_line_id) FROM sales_order_line), 1));
-SELECT setval('stock_transaction_transaction_id_seq', COALESCE((SELECT MAX(transaction_id) FROM stock_transaction), 1));
-SELECT setval('supplier_supplier_id_seq', COALESCE((SELECT MAX(supplier_id) FROM supplier), 1));
-SELECT setval('unit_of_measure_uom_id_seq', COALESCE((SELECT MAX(uom_id) FROM unit_of_measure), 1));
+CREATE OR REPLACE FUNCTION fn_ensure_and_set_seq(seq_name TEXT, tbl_name TEXT, col_name TEXT)
+RETURNS VOID AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = seq_name) THEN
+        EXECUTE format('CREATE SEQUENCE %I', seq_name);
+    END IF;
+    EXECUTE format('SELECT setval(%L, COALESCE((SELECT MAX(%I) FROM %I), 1))', seq_name, col_name, tbl_name);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT fn_ensure_and_set_seq('user_account_user_id_seq', 'user_account', 'user_id');
+SELECT fn_ensure_and_set_seq('batch_material_consumption_consumption_id_seq', 'batch_material_consumption', 'consumption_id');
+SELECT fn_ensure_and_set_seq('customer_customer_id_seq', 'customer', 'customer_id');
+SELECT fn_ensure_and_set_seq('delivery_delivery_id_seq', 'delivery', 'delivery_id');
+SELECT fn_ensure_and_set_seq('department_department_id_seq', 'department', 'department_id');
+SELECT fn_ensure_and_set_seq('employee_employee_id_seq', 'employee', 'employee_id');
+SELECT fn_ensure_and_set_seq('inventory_inventory_id_seq', 'inventory', 'inventory_id');
+SELECT fn_ensure_and_set_seq('lot_lot_id_seq', 'lot', 'lot_id');
+SELECT fn_ensure_and_set_seq('machine_machine_id_seq', 'machine', 'machine_id');
+SELECT fn_ensure_and_set_seq('maintenance_maintenance_id_seq', 'maintenance', 'maintenance_id');
+SELECT fn_ensure_and_set_seq('product_product_id_seq', 'product', 'product_id');
+SELECT fn_ensure_and_set_seq('product_inventory_product_inventory_id_seq', 'product_inventory', 'product_inventory_id');
+SELECT fn_ensure_and_set_seq('product_specification_spec_id_seq', 'product_specification', 'spec_id');
+SELECT fn_ensure_and_set_seq('production_batch_batch_id_seq', 'production_batch', 'batch_id');
+SELECT fn_ensure_and_set_seq('purchase_order_poid_seq', 'purchase_order', 'poid');
+SELECT fn_ensure_and_set_seq('purchase_order_line_po_line_id_seq', 'purchase_order_line', 'po_line_id');
+SELECT fn_ensure_and_set_seq('quality_control_qcid_seq', 'quality_control', 'qcid');
+SELECT fn_ensure_and_set_seq('raw_material_material_id_seq', 'raw_material', 'material_id');
+SELECT fn_ensure_and_set_seq('recipe_recipe_id_seq', 'recipe', 'recipe_id');
+SELECT fn_ensure_and_set_seq('recipe_ingredient_recipe_ingredient_id_seq', 'recipe_ingredient', 'recipe_ingredient_id');
+SELECT fn_ensure_and_set_seq('role_role_id_seq', 'role', 'role_id');
+SELECT fn_ensure_and_set_seq('sales_order_sales_id_seq', 'sales_order', 'sales_id');
+SELECT fn_ensure_and_set_seq('sales_order_line_sales_line_id_seq', 'sales_order_line', 'sales_line_id');
+SELECT fn_ensure_and_set_seq('stock_transaction_transaction_id_seq', 'stock_transaction', 'transaction_id');
+SELECT fn_ensure_and_set_seq('supplier_supplier_id_seq', 'supplier', 'supplier_id');
+SELECT fn_ensure_and_set_seq('unit_of_measure_uom_id_seq', 'unit_of_measure', 'uom_id');
 """)
 
 print("Database seeded successfully!")
