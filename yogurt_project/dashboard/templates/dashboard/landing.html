@@ -12,6 +12,7 @@
 :root {
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   --brand-primary: hsl(350, 75%, 62%);
   --brand-accent: hsl(35, 90%, 55%);
   --brand-dark: #3D2C1A;
@@ -21,88 +22,346 @@
   --text-sec: #8B7355;
   --radius: 12px;
   --radius-sm: 8px;
+  --transition: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
-body{font-family:var(--font-sans);background:var(--bg-body);color:var(--text-pri);min-height:100vh;display:flex;flex-direction:column}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-body);color:var(--text-pri);overflow-x:hidden}
 a{text-decoration:none;color:inherit}
+
+/* ── REVEAL ANIMATIONS ── */
+.fade-up{opacity:0;transform:translateY(40px);transition:opacity var(--transition),transform var(--transition)}
+.fade-up.revealed{opacity:1;transform:translateY(0)}
+.fade-in{opacity:0;transition:opacity 0.8s ease}
+.fade-in.revealed{opacity:1}
+.scale-in{opacity:0;transform:scale(0.85);transition:opacity var(--transition),transform var(--transition)}
+.scale-in.revealed{opacity:1;transform:scale(1)}
+
+/* stagger children */
+.stagger > *{opacity:0;transform:translateY(30px);transition:opacity 0.5s ease,transform 0.5s ease}
+.stagger.revealed > *:nth-child(1){transition-delay:0s}
+.stagger.revealed > *:nth-child(2){transition-delay:0.1s}
+.stagger.revealed > *:nth-child(3){transition-delay:0.2s}
+.stagger.revealed > *:nth-child(4){transition-delay:0.3s}
+.stagger.revealed > *:nth-child(5){transition-delay:0.4s}
+.stagger.revealed > *:nth-child(6){transition-delay:0.5s}
+.stagger.revealed > *{opacity:1;transform:translateY(0)}
 
 /* ── HERO ── */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%, rgba(244,114,150,0.08) 0%, transparent 60%),radial-gradient(ellipse at 70% 60%, rgba(244,165,96,0.06) 0%, transparent 50%);pointer-events:none}
-.brand-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--brand-primary),var(--brand-accent));border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:2rem;color:#fff;margin:0 auto 1.5rem}
-.hero h1{font-family:var(--font-display);font-size:clamp(2rem,6vw,3.2rem);font-weight:800;color:var(--text-pri);margin-bottom:0.75rem}
-.hero p{font-size:clamp(0.95rem,2.5vw,1.15rem);color:var(--text-sec);max-width:600px;line-height:1.7;margin-bottom:2rem}
-.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;font-family:var(--font-sans);font-weight:700;font-size:1rem;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.3s ease}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.5;animation:orbFloat 12s ease-in-out infinite}
+.hero-bg .orb:nth-child(1){width:400px;height:400px;background:rgba(244,114,150,0.12);top:-10%;left:-10%;animation-delay:0s}
+.hero-bg .orb:nth-child(2){width:300px;height:300px;background:rgba(244,165,96,0.10);bottom:-5%;right:-5%;animation-delay:-4s}
+.hero-bg .orb:nth-child(3){width:250px;height:250px;background:rgba(244,114,150,0.08);bottom:20%;left:15%;animation-delay:-8s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.1)}50%{transform:translate(-20px,20px) scale(0.95)}75%{transform:translate(40px,30px) scale(1.05)}}
+
+.brand-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--brand-primary),var(--brand-accent));border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:2rem;color:#fff;margin:0 auto 1.5rem;animation:iconPop 0.8s ease-out;box-shadow:0 8px 32px rgba(244,114,150,0.25)}
+@keyframes iconPop{0%{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,6vw,3.2rem);font-weight:800;color:var(--text-pri);margin-bottom:0.75rem;animation:slideUp 0.8s ease-out 0.2s both}
+.hero p{font-size:clamp(0.95rem,2.5vw,1.15rem);color:var(--text-sec);max-width:600px;line-height:1.7;margin-bottom:2.5rem;animation:slideUp 0.8s ease-out 0.35s both}
+@keyframes slideUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:slideUp 0.8s ease-out 0.5s both}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;font-family:var(--font-sans);font-weight:700;font-size:1rem;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.3s ease;touch-action:manipulation}
 .btn-primary{background:linear-gradient(135deg,var(--brand-primary),hsl(350,75%,50%));color:#fff}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(244,114,150,0.35)}
-.btn-outline{background:transparent;color:var(--text-pri);border:2px solid var(--border-glass)}
-.btn-outline:hover{background:var(--bg-glass)}
+.btn-outline{background:transparent;color:var(--text-pri);border:2px solid rgba(210,180,140,0.3)}
+.btn-outline:hover{background:rgba(255,248,240,0.8);border-color:rgba(210,180,140,0.5)}
 
-/* ── CREDITS SECTION ── */
-.credits{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto;width:100%}
-.credits h2{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.6rem);font-weight:700;color:var(--text-pri);text-align:center;margin-bottom:2rem}
-.credit-card{background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.2);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem}
-.credit-card .role{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--brand-primary);font-weight:700;min-width:80px}
+/* scroll indicator */
+.scroll-indicator{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem;color:var(--text-sec);font-size:0.7rem;text-transform:uppercase;letter-spacing:1.5px;animation:fadeSlideUp 1s ease-out 1s both;cursor:pointer}
+.scroll-indicator .mouse{width:24px;height:38px;border:2px solid var(--text-sec);border-radius:12px;display:flex;justify-content:center;padding-top:6px}
+.scroll-indicator .mouse .dot{width:3px;height:8px;background:var(--text-sec);border-radius:2px;animation:scrollDot 1.8s ease-in-out infinite}
+@keyframes scrollDot{0%{opacity:1;transform:translateY(0)}50%{opacity:1;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+.scroll-indicator .arrow{font-size:1.2rem;animation:bounceArrow 2s ease-in-out infinite}
+@keyframes bounceArrow{0%,100%{transform:translateY(0);opacity:0.5}50%{transform:translateY(6px);opacity:1}}
+@keyframes fadeSlideUp{0%{opacity:0;transform:translateX(-50%) translateY(10px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ── SECTION COMMON ── */
+.section{padding:5rem 2rem;max-width:1100px;margin:0 auto;width:100%}
+.section-title{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2rem);font-weight:800;color:var(--text-pri);text-align:center;margin-bottom:0.75rem}
+.section-sub{text-align:center;color:var(--text-sec);font-size:clamp(0.9rem,2vw,1.05rem);max-width:600px;margin:0 auto 3rem;line-height:1.6}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:5rem}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr);gap:1.5rem}}
+.stat-card{text-align:center;padding:1.5rem 1rem;background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.15);border-radius:var(--radius);transition:all 0.3s ease}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(244,114,150,0.2);box-shadow:0 8px 24px rgba(244,114,150,0.08)}
+.stat-number{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;color:var(--brand-primary)}
+.stat-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);margin-top:0.3rem}
+
+/* ── SYSTEM OVERVIEW ── */
+.overview-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+@media(min-width:640px){.overview-grid{grid-template-columns:1fr 1fr;gap:1.25rem}}
+.overview-card{padding:1.5rem;background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.15);border-radius:var(--radius);transition:all 0.3s ease}
+.overview-card:hover{transform:translateY(-2px);border-color:rgba(244,114,150,0.2);box-shadow:0 6px 20px rgba(244,114,150,0.06)}
+.overview-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:0.75rem;font-size:1.1rem}
+.overview-card h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--text-pri);margin-bottom:0.4rem}
+.overview-card p{font-size:0.82rem;color:var(--text-sec);line-height:1.6}
+
+/* ── ROLES ── */
+.roles-section{background:linear-gradient(180deg,transparent,rgba(244,114,150,0.03),transparent);padding:5rem 2rem}
+.roles-section .section-inner{max-width:1100px;margin:0 auto;width:100%}
+.roles-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+@media(min-width:640px){.roles-grid{grid-template-columns:1fr 1fr;gap:1.25rem}}
+.role-card{display:flex;gap:1rem;padding:1.25rem 1.5rem;background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.15);border-radius:var(--radius);transition:all 0.3s ease}
+.role-card:hover{border-color:rgba(244,114,150,0.25);transform:translateY(-2px)}
+.role-badge{flex-shrink:0;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:#fff;text-transform:uppercase}
+.role-card h4{font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--text-pri);margin-bottom:0.2rem}
+.role-card p{font-size:0.82rem;color:var(--text-sec);line-height:1.5}
+
+/* ── TEAM ── */
+.team-section{padding:5rem 2rem;max-width:800px;margin:0 auto;width:100%}
+
+.credit-card{background:rgba(255,248,240,0.8);backdrop-filter:blur(12px);border:1px solid rgba(210,180,140,0.2);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem;transition:all 0.3s ease}
+.credit-card:hover{border-color:rgba(244,114,150,0.2);transform:translateX(4px)}
+.credit-card .role-tag{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--brand-primary);font-weight:700;min-width:72px}
 .credit-card .name{font-size:1rem;font-weight:600;color:var(--text-pri)}
 .credit-card .name.muted{color:var(--text-sec);font-style:italic}
-.instructor-card{background:linear-gradient(135deg,rgba(244,114,150,0.08),rgba(244,165,96,0.08));border:1px solid rgba(244,114,150,0.2);padding:1.75rem 2rem;margin-bottom:1.5rem}
-.instructor-card .role{color:var(--brand-primary);font-size:0.7rem}
-.instructor-card .name{font-size:1.2rem}
+.credit-card .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--brand-primary),var(--brand-accent));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;color:#fff;flex-shrink:0}
+.instructor-card{background:linear-gradient(135deg,rgba(244,114,150,0.08),rgba(244,165,96,0.08));border:1px solid rgba(244,114,150,0.2);padding:1.5rem}
+.instructor-card .role-tag{color:var(--brand-primary);font-size:0.65rem}
+.instructor-card .name{font-size:1.15rem}
+.instructor-card .avatar{width:44px;height:44px;font-size:1rem}
+.more-card{border:2px dashed rgba(210,180,140,0.25);background:transparent;backdrop-filter:none;cursor:default}
+.more-card:hover{transform:none;border-color:rgba(210,180,140,0.35)}
+.more-card .name{color:var(--text-sec);font-style:italic}
 
 /* ── FOOTER ── */
-.footer{text-align:center;padding:1.5rem;color:var(--text-sec);font-size:0.8rem;border-top:1px solid rgba(210,180,140,0.15);margin-top:auto}
+.footer{text-align:center;padding:2rem 1.5rem;color:var(--text-sec);font-size:0.8rem;border-top:1px solid rgba(210,180,140,0.12)}
 </style>
 </head>
 <body>
 
+<!-- ============================================================ -->
+<!-- HERO -->
+<!-- ============================================================ -->
 <section class="hero">
+  <div class="hero-bg">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+
   <div class="brand-icon">Y</div>
   <h1>Yogurt Processing System</h1>
-  <p>A comprehensive database management system for yogurt production — tracking inventory, batches, quality control, machinery, purchasing, sales, and more.</p>
-  <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
-</section>
-
-<section class="credits">
-  <h2>Project Team</h2>
-
-  <div class="credit-card instructor-card">
-    <div>
-      <div class="role">Instructor</div>
-      <div class="name">KINGUE PATRICK</div>
-    </div>
+  <p>A comprehensive database management platform for yogurt production — tracking inventory, batches, quality control, machinery, purchasing, sales, and more.</p>
+  <div class="hero-actions">
+    <a href="/app/" class="btn btn-primary">Launch Dashboard →</a>
+    <a href="#team" class="btn btn-outline">Meet the Team</a>
   </div>
 
-  <div class="credit-card">
-    <div>
-      <div class="role">Student</div>
-      <div class="name">NGONG SONG DILAN</div>
-    </div>
-  </div>
-
-  <div class="credit-card">
-    <div>
-      <div class="role">Student</div>
-      <div class="name">NGOH FRANCIS EFEM</div>
-    </div>
-  </div>
-
-  <div class="credit-card">
-    <div>
-      <div class="role">Student</div>
-      <div class="name">NYANDO MBONNE</div>
-    </div>
-  </div>
-
-  <div class="credit-card">
-    <div>
-      <div class="role">Student</div>
-      <div class="name" id="more-placeholder">+ Add more members...</div>
-    </div>
+  <div class="scroll-indicator" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
+    <div class="mouse"><div class="dot"></div></div>
+    <span>Scroll</span>
   </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- STATS -->
+<!-- ============================================================ -->
+<section id="stats" class="section">
+  <div class="stats-grid fade-up">
+    <div class="stat-card"><div class="stat-number" data-count="27">0</div><div class="stat-label">Database Tables</div></div>
+    <div class="stat-card"><div class="stat-number" data-count="9">0</div><div class="stat-label">System Modules</div></div>
+    <div class="stat-card"><div class="stat-number" data-count="5">0</div><div class="stat-label">User Roles</div></div>
+    <div class="stat-card"><div class="stat-number" data-count="3">0</div><div class="stat-label">Security Triggers</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SYSTEM OVERVIEW -->
+<!-- ============================================================ -->
+<section class="section">
+  <h2 class="section-title fade-up">System Modules</h2>
+  <p class="section-sub fade-up">Every aspect of yogurt production, from raw milk intake to final sale, managed in one place.</p>
+  <div class="overview-grid stagger">
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(244,114,150,0.12);color:var(--brand-primary)">📊</div>
+      <h3>Dashboard</h3>
+      <p>Real-time overview of active batches, stock levels, QC failures, machine status, pending orders, and recent changes.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(16,185,129,0.12);color:#10B981">📦</div>
+      <h3>Inventory</h3>
+      <p>Track raw materials and finished goods with lot-level traceability, expiry dates, and reserved quantities.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(59,130,246,0.12);color:#3B82F6">🏭</div>
+      <h3>Production Batches</h3>
+      <p>Plan and monitor batch production from recipe assignment to completion, with full status tracking.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(245,158,11,0.12);color:#F59E0B">🔬</div>
+      <h3>Quality Control</h3>
+      <p>Record inspection results per batch with pass/fail/hold status. Completed QC records are locked against modification.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(139,92,246,0.12);color:#8B5CF6">⚙️</div>
+      <h3>Machines</h3>
+      <p>Manage equipment inventory, operational status, and preventive maintenance schedules with cost tracking.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(236,72,153,0.12);color:#EC4899">📋</div>
+      <h3>Audit Trail</h3>
+      <p>Automatic change tracking via PostgreSQL triggers — every INSERT, UPDATE, DELETE is logged with who and when.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(249,115,22,0.12);color:#F97316">🛒</div>
+      <h3>Purchasing &amp; Sales</h3>
+      <p>End-to-end purchase orders with suppliers and sales orders to customers, including line-item details and totals.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(14,165,233,0.12);color:#0EA5E9">🔐</div>
+      <h3>Security Sandbox</h3>
+      <p>Interactive tests for PostgreSQL triggers: completed batch lock, QC approval lock, check constraints, and unique violations.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon" style="background:rgba(168,85,247,0.12);color:#A855F7">💾</div>
+      <h3>SQL Explorer</h3>
+      <p>Run read-only SQL queries directly against the database to inspect tables, joins, and raw data.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- ROLES -->
+<!-- ============================================================ -->
+<section class="roles-section">
+  <div class="section-inner">
+    <h2 class="section-title fade-up">User Roles &amp; Permissions</h2>
+    <p class="section-sub fade-up">Each role is tailored to specific responsibilities within the yogurt processing workflow.</p>
+    <div class="roles-grid stagger">
+      <div class="role-card">
+        <div class="role-badge" style="background:linear-gradient(135deg,#EF4444,#DC2626)">A</div>
+        <div>
+          <h4>Admin</h4>
+          <p>Full system access — manage users, oversee all modules, configure roles, and access sensitive audit data.</p>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-badge" style="background:linear-gradient(135deg,#F59E0B,#D97706)">M</div>
+        <div>
+          <h4>Manager</h4>
+          <p>Production oversight — create and approve batches, review inventory, analyze QC results, and generate reports.</p>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-badge" style="background:linear-gradient(135deg,#3B82F6,#2563EB)">O</div>
+        <div>
+          <h4>Operator</h4>
+          <p>Daily operations — start and complete production batches, record material consumption, and update machine status.</p>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-badge" style="background:linear-gradient(135deg,#10B981,#059669)">I</div>
+        <div>
+          <h4>Inspector</h4>
+          <p>Quality assurance — perform inspections, record results, and flag batches for review. Passed inspections are locked.</p>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-badge" style="background:linear-gradient(135deg,#8B7355,#6D5A3D)">V</div>
+        <div>
+          <h4>Viewer</h4>
+          <p>Read-only access — view dashboards, browse reports, and inspect audit logs without making any changes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TEAM -->
+<!-- ============================================================ -->
+<section id="team" class="team-section">
+  <h2 class="section-title fade-up">Project Team</h2>
+  <p class="section-sub fade-up">Built as a database management capstone project.</p>
+
+  <div class="fade-up">
+    <div class="credit-card instructor-card">
+      <div class="avatar">KP</div>
+      <div>
+        <div class="role-tag">Instructor</div>
+        <div class="name">KINGUE PATRICK</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stagger">
+    <div class="credit-card">
+      <div class="avatar">NS</div>
+      <div>
+        <div class="role-tag">Student</div>
+        <div class="name">NGONG SONG DILAN</div>
+      </div>
+    </div>
+    <div class="credit-card">
+      <div class="avatar">NF</div>
+      <div>
+        <div class="role-tag">Student</div>
+        <div class="name">NGOH FRANCIS EFEM</div>
+      </div>
+    </div>
+    <div class="credit-card">
+      <div class="avatar">NM</div>
+      <div>
+        <div class="role-tag">Student</div>
+        <div class="name">NYANDO MBONNE</div>
+      </div>
+    </div>
+    <div class="credit-card more-card">
+      <div class="avatar" style="background:rgba(210,180,140,0.3);color:var(--text-sec)">+</div>
+      <div>
+        <div class="role-tag">Student</div>
+        <div class="name muted">Add more members...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
 <div class="footer">Yogurt Processing System &mdash; Database Management Project</div>
+
+<script>
+// Intersection Observer for scroll-triggered animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up, .fade-in, .scale-in, .stagger').forEach(el => {
+  observer.observe(el);
+});
+
+// Animated counter for stats
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count);
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current;
+      }, 40);
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+</script>
 </body>
 </html>
