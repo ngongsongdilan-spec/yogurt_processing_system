@@ -442,14 +442,14 @@ const FORM_CONFIGS = {
       {name:'name',label:'Machine Name',type:'text',required:true},
       {name:'type',label:'Type',type:'text'},
       {name:'location',label:'Location',type:'text'},
-      {name:'status',label:'Status',type:'select',options:['Operational','Maintenance','Retired']},
+      {name:'status',label:'Status',type:'select',options:['Operational','Under Maintenance','Out of Service']},
       {name:'purchase_date',label:'Purchase Date',type:'date'},
     ],
     editFields: [
       {name:'name',label:'Machine Name',type:'text',required:true},
       {name:'type',label:'Type',type:'text'},
       {name:'location',label:'Location',type:'text'},
-      {name:'status',label:'Status',type:'select',options:['Operational','Maintenance','Retired']},
+      {name:'status',label:'Status',type:'select',options:['Operational','Under Maintenance','Out of Service']},
       {name:'purchase_date',label:'Purchase Date',type:'date'},
     ],
     refresh: () => loadMachines(),
@@ -460,10 +460,10 @@ const FORM_CONFIGS = {
     createFields: [
       {name:'supplier_id',label:'Supplier',type:'select',ref:'suppliers',required:true},
       {name:'total',label:'Total Amount',type:'number'},
-      {name:'status',label:'Status',type:'select',options:['Pending','Approved','Received','Cancelled']},
+      {name:'status',label:'Status',type:'select',options:['Pending','Approved','Completed','Cancelled']},
     ],
     editFields: [
-      {name:'status',label:'Status',type:'select',options:['Pending','Approved','Received','Cancelled']},
+      {name:'status',label:'Status',type:'select',options:['Pending','Approved','Completed','Cancelled']},
       {name:'total_amount',label:'Total Amount',type:'number'},
     ],
     refresh: () => loadPurchasing(),
@@ -474,10 +474,10 @@ const FORM_CONFIGS = {
     createFields: [
       {name:'customer_id',label:'Customer',type:'select',ref:'customers',required:true},
       {name:'total',label:'Total Amount',type:'number'},
-      {name:'status',label:'Status',type:'select',options:['Pending','Shipped','Delivered','Cancelled']},
+      {name:'status',label:'Status',type:'select',options:['Pending','Processing','Delivered','Cancelled']},
     ],
     editFields: [
-      {name:'status',label:'Status',type:'select',options:['Pending','Shipped','Delivered','Cancelled']},
+      {name:'status',label:'Status',type:'select',options:['Pending','Processing','Delivered','Cancelled']},
       {name:'total_amount',label:'Total Amount',type:'number'},
     ],
     refresh: () => loadSales(),
