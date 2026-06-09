@@ -711,7 +711,7 @@ def trigger_test_view(request):
                           "VALUES (1, 1, -100, 'Planned', 1)")
                 return JsonResponse({'status': 'success', 'message': 'Unexpected: negative qty allowed!'})
             elif test_type == 'unique_violation':
-                c.execute("INSERT INTO user_account (username, password) VALUES (%s, 'test')",
+                c.execute("INSERT INTO user_account (username, password, role_id) VALUES (%s, 'test', 1)",
                           [data.get('username', 'admin')])
                 return JsonResponse({'status': 'success', 'message': 'Unexpected: duplicate allowed!'})
     except DatabaseError as e:
