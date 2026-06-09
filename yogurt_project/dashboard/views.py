@@ -213,6 +213,31 @@ def inventory_data(request):
             return JsonResponse({'status': 'success', 'raw_materials': raw, 'finished_goods': prod})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            if 'material_id' in data:
+                with connection.cursor() as c:
+                    c.execute(
+                        "INSERT INTO inventory (material_id, lot_id, quantity_on_hand, uom_id) "
+                        "VALUES (%s, %s, %s, %s) RETURNING inventory_id",
+                        [data['material_id'], data.get('lot_id'), data['qty'], data['uom_id']]
+                    )
+                    iid = c.fetchone()[0]
+                return JsonResponse({'status': 'success', 'inventory_id': iid, 'message': 'Raw material added.'})
+            elif 'product_id' in data:
+                with connection.cursor() as c:
+                    c.execute(
+                        "INSERT INTO product_inventory (product_id, batch_id, quantity_on_hand, uom_id, expiry_date) "
+                        "VALUES (%s, %s, %s, %s, %s) RETURNING product_inventory_id",
+                        [data['product_id'], data.get('batch'), data['qty'], data['uom_id'], data.get('expiry')]
+                    )
+                    pid = c.fetchone()[0]
+                return JsonResponse({'status': 'success', 'product_inventory_id': pid, 'message': 'Finished good added.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Provide material_id (raw) or product_id (finished good)'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': f'Method {request.method} not supported'}, status=405)
 
 
@@ -303,10 +328,17 @@ def batch_detail_view(request, batch_id):
             data = json.loads(request.body)
             fields = []
             vals = []
+            numeric_cols = {'actual_qty', 'planned_qty', 'product_id', 'recipe_id'}
             for k in ['status', 'actual_qty', 'planned_qty', 'product_id', 'recipe_id']:
                 if k in data:
+                    v = data[k]
+                    if v == '' or v is None:
+                        if k in numeric_cols:
+                            v = None
+                        else:
+                            continue
                     fields.append(f'{k}=%s')
-                    vals.append(data[k])
+                    vals.append(v)
             if not fields:
                 return JsonResponse({'status': 'error', 'message': 'No fields to update'}, status=400)
             vals.append(batch_id)
@@ -442,13 +474,21 @@ def machine_detail_view(request, machine_id):
     if request.method == 'PUT':
         try:
             data = json.loads(request.body)
-            fields = [f'{k}=%s' for k in data if k in ('machine_name','machine_type','location','status','purchase_date')]
-            vals = [data[k] for k in data if k in ('machine_name','machine_type','location','status','purchase_date')]
-            if not fields:
+            field_map = {'name': 'machine_name', 'type': 'machine_type'}
+            set_cols = []
+            set_vals = []
+            for k, v in data.items():
+                col = field_map.get(k, k)
+                if col in ('machine_name','machine_type','location','status','purchase_date'):
+                    set_cols.append(col)
+                    set_vals.append(v)
+            if not set_cols:
                 return JsonResponse({'status': 'error', 'message': 'No fields'}, status=400)
-            vals.append(machine_id)
+            set_vals.append(machine_id)
             with connection.cursor() as c:
-                c.execute(f"UPDATE machine SET {', '.join(fields)} WHERE machine_id=%s", vals)
+                c.execute(
+                    f"UPDATE machine SET {', '.join(f'{k}=%s' for k in set_cols)} WHERE machine_id=%s", set_vals
+                )
             return JsonResponse({'status': 'success', 'message': 'Machine updated.'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
@@ -633,10 +673,15 @@ def ref_data(request):
             materials = [dict(zip(['id','name'], r)) for r in c.fetchall()]
             c.execute("SELECT machine_id, machine_name FROM machine ORDER BY machine_name")
             machines = [dict(zip(['id','name'], r)) for r in c.fetchall()]
+            c.execute("SELECT lot_id, batch_no FROM lot ORDER BY batch_no")
+            lots = [dict(zip(['id','name'], r)) for r in c.fetchall()]
+            c.execute("SELECT batch_id, batch_id AS name FROM production_batch ORDER BY batch_id")
+            batches = [dict(zip(['id','name'], r)) for r in c.fetchall()]
         return JsonResponse({'status': 'success', 'data': {
             'products': products, 'recipes': recipes, 'employees': employees,
             'suppliers': suppliers, 'customers': customers, 'uoms': uoms,
             'materials': materials, 'machines': machines,
+            'lots': lots, 'batches': batches,
         }})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

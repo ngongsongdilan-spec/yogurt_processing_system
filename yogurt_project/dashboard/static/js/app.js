@@ -397,7 +397,7 @@ const FORM_CONFIGS = {
     updateEndpoint: (id) => `/api/inventory/${id}/`, deleteEndpoint: (id) => `/api/inventory/${id}/`,
     createFields: [
       {name:'material_id',label:'Material',type:'select',ref:'materials',required:true},
-      {name:'lot_id',label:'Lot ID',type:'number'},
+      {name:'lot_id',label:'Lot',type:'select',ref:'lots',required:true},
       {name:'qty',label:'Quantity',type:'number',required:true},
       {name:'uom_id',label:'UOM',type:'select',ref:'uoms',required:true},
     ],
@@ -409,10 +409,10 @@ const FORM_CONFIGS = {
     updateEndpoint: (id) => `/api/products/${id}/`, deleteEndpoint: (id) => `/api/products/${id}/`,
     createFields: [
       {name:'product_id',label:'Product',type:'select',ref:'products',required:true},
-      {name:'batch',label:'Batch ID',type:'number'},
+      {name:'batch',label:'Batch',type:'select',ref:'batches',required:true},
       {name:'qty',label:'Quantity',type:'number',required:true},
       {name:'uom_id',label:'UOM',type:'select',ref:'uoms',required:true},
-      {name:'expiry',label:'Expiry Date',type:'date'},
+      {name:'expiry',label:'Expiry Date',type:'date',required:true},
     ],
     editFields: [
       {name:'qty',label:'Quantity',type:'number',required:true},
